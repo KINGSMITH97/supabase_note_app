@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_note_app/components/text_form_field.dart';
 import 'package:supabase_note_app/screens/home.dart';
-import 'package:supabase_note_app/screens/login.dart';
-import 'package:supabase_note_app/screens/signup.dart';
+
 import 'package:supabase_note_app/services/authentication.dart';
 
 class LoginPage extends StatefulWidget {
@@ -42,14 +42,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 8),
-            TextFormField(
+            KtextFormField(
               controller: emailController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.mail),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+              prefixIcon: const Icon(Icons.mail),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -61,15 +56,10 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 8),
-            TextFormField(
+            KtextFormField(
               obscureText: true,
               controller: passwordController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.lock),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+              prefixIcon: const Icon(Icons.lock),
             ),
             const SizedBox(height: 32),
             SizedBox(
@@ -85,12 +75,16 @@ class _LoginPageState extends State<LoginPage> {
                   Authentication().login(
                       email: emailController.text.trim(),
                       password: passwordController.text.trim());
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(),
-                    ),
-                  );
+                  if (!mounted) {
+                    return;
+                  } else {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                    );
+                  }
                 },
                 child: const Text(
                   'Login',

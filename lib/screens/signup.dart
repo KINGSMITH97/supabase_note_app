@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_note_app/components/text_form_field.dart';
 import 'package:supabase_note_app/screens/login.dart';
 import 'package:supabase_note_app/services/authentication.dart';
+import 'package:supabase_note_app/services/crud_operations.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -41,14 +43,9 @@ class _SignupPageState extends State<SignupPage> {
               ),
             ),
             const SizedBox(height: 8),
-            TextFormField(
+            KtextFormField(
               controller: usernameController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.person),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+              prefixIcon: const Icon(Icons.person),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -60,14 +57,9 @@ class _SignupPageState extends State<SignupPage> {
               ),
             ),
             const SizedBox(height: 8),
-            TextFormField(
+            KtextFormField(
               controller: emailController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.mail),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+              prefixIcon: const Icon(Icons.mail),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -79,15 +71,10 @@ class _SignupPageState extends State<SignupPage> {
               ),
             ),
             const SizedBox(height: 8),
-            TextFormField(
+            KtextFormField(
               obscureText: true,
               controller: passwordController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.lock),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+              prefixIcon: const Icon(Icons.lock),
             ),
             const SizedBox(height: 32),
             SizedBox(
@@ -107,6 +94,7 @@ class _SignupPageState extends State<SignupPage> {
                       'username': usernameController.text.trim(),
                     },
                   );
+                  createUser(emailController.text);
                   if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(

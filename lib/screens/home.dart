@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_note_app/main.dart';
+import 'package:supabase_note_app/model/note_item.dart';
+import 'package:supabase_note_app/screens/create_note_page.dart';
+import 'package:supabase_note_app/screens/update_note.dart';
+
 import 'package:supabase_note_app/services/crud_operations.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,11 +14,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final noteStream = supabase.from('notes').stream(primaryKey: ['id']);
   TextEditingController noteContentController = TextEditingController();
   TextEditingController updateNoteController = TextEditingController();
 
-  String updatedNote = '';
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,49 +34,16 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('Create a new note'),
-                content: TextFormField(
-                  controller: noteContentController,
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      CrudOperations().createNote(noteContentController.text);
-                      noteContentController.clear();
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CreateNotePage(),
+              ));
         },
         child: const Icon(Icons.add),
       ),
       body: StreamBuilder(
-        stream: noteStream,
+        stream: fetchNotes(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const CircularProgressIndicator();
@@ -80,110 +53,84 @@ class _HomePageState extends State<HomePage> {
           return ListView.builder(
             itemCount: notes.length,
             itemBuilder: (context, index) {
-              final note = notes[index];
-              final noteId = note['id'];
+              final NoteItem note = NoteItem.fromJson(notes[index]);
+
               return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: ListTile(
-                  tileColor: Colors.grey[100],
-                  title: Text(
-                    note['note_content'].toString(),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      letterSpacing: 0,
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UpdateNotePage(note: note),
+                        ));
+                  },
+                  onLongPress: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Delete Note'),
+                          content: const Text(
+                            'Are you sure you want to delete this note?',
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                deleteNoteItem(context, note.id);
+                              },
+                              child: const Text(
+                                'Delete',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: Colors.teal[100],
                     ),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text('Update note'),
-                                content: TextFormField(
-                                  initialValue: note['note_content'],
-                                  onChanged: (value) {
-                                    setState(() {
-                                      updatedNote = value;
-                                    });
-                                  },
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      CrudOperations()
-                                          .updateNote(updatedNote, noteId);
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text(
-                                      'Save',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        icon: const Icon(Icons.edit),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            note.title,
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            note.noteContent,
+                            style: const TextStyle(
+                              fontSize: 24,
+                            ),
+                          ),
+                          const Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              "Created on: ",
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        onPressed: () async {
-                          bool isDeleteConfrimed = await showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text('Delete note'),
-                                content: const Text(
-                                  'Are you sure you want to delete this note',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () async {
-                                      return Navigator.pop(context, true);
-                                    },
-                                    child: const Text(
-                                      'Yes',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      return Navigator.pop(context, false);
-                                    },
-                                    child: const Text(
-                                      'No',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                          if (isDeleteConfrimed) {
-                            CrudOperations().deleteNote(noteId);
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               );
@@ -193,4 +140,11 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  //
+}
+
+void deleteNoteItem(BuildContext context, int noteId) {
+  deleteNote(noteId);
+  Navigator.pop(context);
 }

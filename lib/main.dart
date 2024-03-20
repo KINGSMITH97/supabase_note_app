@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:supabase_note_app/screens/signup.dart';
+import 'package:supabase_note_app/utils/app_theme.dart';
 
 Future<void> main() async {
   //
@@ -27,11 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        textTheme: GoogleFonts.ptSansTextTheme(),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
-        useMaterial3: true,
-      ),
+      theme: appTheme,
       home: const SignupPage(),
     );
   }
