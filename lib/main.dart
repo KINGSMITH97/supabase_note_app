@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_note_app/index_page.dart';
 import 'package:supabase_note_app/screens/signup.dart';
+import 'package:supabase_note_app/services/navigation_service.dart';
 import 'package:supabase_note_app/utils/app_theme.dart';
 
 Future<void> main() async {
@@ -28,7 +30,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: appTheme,
-      home: const SignupPage(),
+      initialRoute: NavigationService.index,
+      navigatorKey: NavigationService.navigatorKey,
+      onGenerateRoute: NavigationService.onGenerateRoute,
+      // home: const IndexPage(),
     );
   }
 }

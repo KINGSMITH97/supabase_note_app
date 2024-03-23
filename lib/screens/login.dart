@@ -3,6 +3,7 @@ import 'package:supabase_note_app/components/text_form_field.dart';
 import 'package:supabase_note_app/screens/home.dart';
 
 import 'package:supabase_note_app/services/authentication.dart';
+import 'package:supabase_note_app/services/navigation_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,6 +15,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,18 +75,19 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 onPressed: () {
                   Authentication().login(
-                      email: emailController.text.trim(),
-                      password: passwordController.text.trim());
-                  if (!mounted) {
-                    return;
-                  } else {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePage(),
-                      ),
-                    );
-                  }
+                    email: emailController.text.trim(),
+                    password: passwordController.text.trim(),
+                  );
+
+                  if (!mounted) return;
+
+                  NavigationService.openHomePage(clearStack: true);
+                  // Navigator.pushReplacement(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => const HomePage(),
+                  //   ),
+                  // );
                 },
                 child: const Text(
                   'Login',

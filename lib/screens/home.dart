@@ -29,6 +29,18 @@ class _HomePageState extends State<HomePage> {
         foregroundColor: Colors.white,
         backgroundColor: Colors.green,
         title: const Text('Supabase Notes App'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              supabase.auth.signOut().then((value){
+                
+              });
+            },
+            icon: const Icon(
+              Icons.logout,
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
@@ -141,7 +153,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  //
+//
 }
 
 void deleteNoteItem(BuildContext context, int noteId) {

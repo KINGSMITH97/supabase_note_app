@@ -34,7 +34,7 @@ Future<void> deleteNote(int noteId) async {
 }
 
 SupabaseStreamBuilder fetchNotes() {
-  String userId = supabase.auth.currentUser!.id;
+  String userId = supabase.auth.currentUser?.id ?? "";
   return supabase
       .from('notes')
       .stream(primaryKey: ['id']).eq("user_id", userId);
